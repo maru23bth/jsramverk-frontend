@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "rsync -av --delete -e \"ssh -i $HOME/.ssh/dbwebb\" out/ maru23@ssh.student.bth.se:www/editor"
   },
   "dependencies": {
     "react": "^18",
