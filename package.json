@@ -10,9 +10,14 @@
     "deploy": "rsync -av --delete -e \"ssh -i $HOME/.ssh/dbwebb\" out/ maru23@ssh.student.bth.se:www/editor"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.0",
+    "@mui/material": "^6.1.0",
+    "@toolpad/core": "^0.5.2",
+    "next": "14.2.11",
     "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.11"
+    "react-dom": "^18"
   },
   "devDependencies": {
     "eslint": "^8",
