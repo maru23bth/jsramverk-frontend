@@ -1,6 +1,7 @@
 import { AppProvider } from "@toolpad/core/nextjs";
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import { Suspense } from 'react'
+import Image from 'next/image'
 
 const NAVIGATION = [
   {
@@ -23,7 +24,7 @@ export default function RootLayout({ children }) {
           <AppProvider
             navigation={NAVIGATION}
             branding={{
-              logo: <img src="https://dbwebb.se/image/theme/leaf_256x256.png" alt="dbwebb logo" />,
+              logo: <Image src="https://dbwebb.se/image/theme/leaf_256x256.png" width={40} height={40} alt="dbwebb logo" />,
               title: 'Editor',
             }}
           >
