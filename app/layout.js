@@ -1,20 +1,24 @@
 import { AppProvider } from "@toolpad/core/nextjs";
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import { Suspense } from 'react'
-import Image from 'next/image'
+import { Suspense } from 'react';
+import Image from 'next/image';
 
 const NAVIGATION = [
   {
     kind: 'header',
-    title: 'Dokument',
+    title: 'Menu',
   },
   {
-    segment: 'new-document',
+    segment: '/document',
+    title: 'Documents',
+    icon: <NoteAddIcon />,
+  },
+  {
+    segment: 'document/new',
     title: 'New document',
     icon: <NoteAddIcon />,
   },
 ];
-
 
 export default function RootLayout({ children }) {
   return (

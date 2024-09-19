@@ -1,13 +1,11 @@
 import { PageContainer } from '@toolpad/core/PageContainer';
-import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import MyForm from './myForm';
+import EditDocument from './editDocument';
 
 
 export default function page({ children }) {
   return (
     <PageContainer>
-      <MyForm />
+      <EditDocument />
     </PageContainer>
   );
 }  
