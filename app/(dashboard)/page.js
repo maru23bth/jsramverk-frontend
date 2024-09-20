@@ -3,7 +3,8 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { useRouter } from 'next/navigation';
-import { Box, CircularProgress, Typography, List, ListItem, ListItemAvatar, Avatar, ListItemText, IconButton, Tooltip, Link } from '@mui/material';
+import Link from 'next/link'
+import { Box, CircularProgress, Typography, List, ListItem, ListItemAvatar, Avatar, ListItemText, IconButton, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
@@ -52,6 +53,13 @@ export default function DocumentList() {
     router.push(`/document/edit/?id=${id}`);
   };
 
+  const styleSecondary = {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    lineClamp: '2',
+    marginInlineEnd: '48px',
+  }
+
   return (
     <Box sx={{ margin: 4 }}>
       <Typography sx={{ marginTop: 4, marginBottom: 2 }} variant="h6" component="div">
@@ -82,11 +90,12 @@ export default function DocumentList() {
             </ListItemAvatar>
             <ListItemText
               primary={
-                <Link href={`/document/edit/${id}`} underline="none">
+                <Link href={`/document/edit/?id=${id}`} underline="none">
                   {title}
                 </Link>
               }
               secondary={content}
+              secondaryTypographyProps={{style: styleSecondary}}
             />
           </ListItem>
         </List>
