@@ -2,7 +2,8 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { TextField, Button, Box, Typography, Alert } from '@mui/material';
+import { TextField, Box, Typography } from '@mui/material';
+import CustomizedMenuBtn from './optionsMenuBtn';
 
 export default function EditDocument() {
     const searchParams = useSearchParams();
@@ -11,15 +12,14 @@ export default function EditDocument() {
 
     const [documentTitle, setDocumentTitle] = useState('');
     const [documentContent, setDocumentContent] = useState('');
-    const [feedback, setFeedback] = useState('');
-    const [feedbackType, setFeedbackType] = useState('');
+    const document = { title: documentTitle, content: documentContent };
 
     const handleTitleChange = (event) => {
         setDocumentTitle(event.target.value);
     };
 
     const handleContentChange = (event) => {
-    setDocumentContent(event.target.value);
+        setDocumentContent(event.target.value);
     };
 
     useEffect(() => {
@@ -34,49 +34,13 @@ export default function EditDocument() {
     }
     }, [id]);
 
-    const handleSubmit = async () => {
-    const updatedDocument = {
-        title: documentTitle,
-        content: documentContent,
-    };
-
-    try {
-        const response = await fetch(`${url}/documents/${id}`, {
-            method: 'PUT',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedDocument),
-        });
-
-        if (response.ok) {
-            setFeedback(`Document titled "${documentTitle}" has been updated successfully.`);
-            setFeedbackType('success');
-        } else {
-            setFeedback('Failed to update document.');
-            setFeedbackType('error');
-        }
-    } catch (error) {
-        setFeedback('Error updating document.');
-        setFeedbackType('error');
-        console.log("Error updating document:", error);
-    }
-
-    // router.push('/');
-    };
-
     if (!document) return <div>Loading...</div>;
 
     return (
         <Box sx={{ padding: 2 }}>
         <Typography variant="h6" gutterBottom>
         Document
-        </Typography>{/* feedback && () - Conditional Rendering: The alert is only rendered if feedback is truthy */}
-        {feedback && (
-            <Alert severity={feedbackType} sx={{ marginBottom: 2 }}>
-                {feedback}
-            </Alert>
-        )}
+        </Typography>
         <Box sx={{ marginBottom: 2 }}>
         <TextField
             label="Title"
@@ -97,13 +61,7 @@ export default function EditDocument() {
             fullWidth
         />
         </Box>
-        <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSubmit}
-        >
-        Submit
-        </Button>
+        <CustomizedMenuBtn data={document} id={id} />
     </Box>
     );
 }

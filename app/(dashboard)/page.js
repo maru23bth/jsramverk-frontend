@@ -55,9 +55,13 @@ export default function DocumentList() {
 
   const styleSecondary = {
     overflow: 'hidden',
+    overflowY: 'scroll',
     textOverflow: 'ellipsis',
     lineClamp: '2',
+    maxWidth: '100%',
     marginInlineEnd: '48px',
+    maxHeight: '50px',
+    padding: '5px'
   }
 
   return (
