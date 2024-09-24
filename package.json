@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "rsync -av --delete -e \"ssh -i $HOME/.ssh/dbwebb\" out/ maru23@ssh.student.bth.se:www/editor"
+    "deploy": "bash -c 'source $HOME/.dbwebb.config; echo $DBW_USER@$DBW_HOST; rsync -av --delete -e \"ssh -i $DBW_SSH_KEY\" out/ $DBW_USER@$DBW_HOST:www/editor'"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
