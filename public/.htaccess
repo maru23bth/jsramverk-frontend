@@ -1,9 +1,15 @@
 RewriteEngine on
 
 # Igore real files (images, stylesheets etc.)
-RewriteCond %{REQUEST_FILENAME} -f [OR]
-RewriteCond %{REQUEST_FILENAME} -d
+# RewriteCond %{REQUEST_FILENAME} -f [OR]
+# RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule (.*) - [NC,L]
+
+# For request via www.student.bth.se return the file.html if it exists
+RewriteCond %{HTTP_HOST} ^www\.student\.bth\.se$ [NC]
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule (.*) /~maru23/editor/$1.html [NC,L]
 
 # Rewrite 1 - For request via www.student.bth.se
 RewriteCond %{HTTP_HOST} ^www\.student\.bth\.se$ [NC]
