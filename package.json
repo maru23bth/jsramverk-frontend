@@ -6,12 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "bash -c 'source $HOME/.dbwebb.config; echo $DBW_USER@$DBW_HOST; rsync -av --delete -e \"ssh -i $DBW_SSH_KEY\" out/ $DBW_USER@$DBW_HOST:www/editor'"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.0",
+    "@mui/material": "^6.1.0",
+    "@toolpad/core": "^0.5.2",
+    "next": "14.2.11",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.11"
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "eslint": "^8",
