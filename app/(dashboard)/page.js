@@ -1,4 +1,6 @@
 "use client";
+import 'dotenv/config';
+console.log(process.env)
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import useSWR from 'swr';
@@ -15,7 +17,8 @@ const fetcher = (...args) => fetch(...args).then(res => res.json());
 export default function DocumentList() {
   // router to be able to redirect between pages
   const router = useRouter();
-  const url = 'https://jsramverk-maru23-dxfhbmhkbdd4e4ep.northeurope-01.azurewebsites.net';
+  // const url = process.env.API_URL;
+  const url = process.env.NEXT_PUBLIC_API_URL;
   // Fetch data from the API during the mount of the component
   const { data, error, isLoading } = useSWR(`${url}/documents`, fetcher);
   const [documents, setDocuments] = useState([]);

@@ -8,7 +8,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { createDocument, updateDocument } from '@/app/apiRequests';
-import FeedbackAlert from '@/app/FeedbackAlert';
+import FeedbackAlert from '@/app/components/components/FeedbackAlert';
 
 
 export default function CustomizedMenuBtn(props) {

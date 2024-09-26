@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
-import FeedbackAlert from '@/app/FeedbackAlert'
+import FeedbackAlert from '@/app/components/FeedbackAlert'
 
 describe('FeedbackAlert', () => {
     it('renders with feedback type success', () => {
