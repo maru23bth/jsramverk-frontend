@@ -1,6 +1,6 @@
 /* Module with functions that make POST, OUT, GET requests to the API */
 async function createDocument(documentTitle, documentContent, setFeedback, setFeedbackType) {
-    const url = 'https://jsramverk-maru23-dxfhbmhkbdd4e4ep.northeurope-01.azurewebsites.net';
+    const url = process.env.API_URL;
     const document = { title: documentTitle, content: documentContent };
 
     try {
@@ -29,7 +29,7 @@ async function createDocument(documentTitle, documentContent, setFeedback, setFe
 }
 
 async function updateDocument(id, documentTitle, documentContent, setFeedback, setFeedbackType) {
-    const url = 'https://jsramverk-maru23-dxfhbmhkbdd4e4ep.northeurope-01.azurewebsites.net';
+    const url = process.env.API_URL;
     const document = { title: documentTitle, content: documentContent };
 
     try {

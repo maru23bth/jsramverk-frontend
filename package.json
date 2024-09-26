@@ -9,7 +9,6 @@
     "lint": "next lint",
     "deploy": "bash -c 'source $HOME/.dbwebb.config; echo $DBW_USER@$DBW_HOST; rsync -av --delete -e \"ssh -i $DBW_SSH_KEY\" out/ $DBW_USER@$DBW_HOST:www/editor'",
     "test": "jest",
-    "test coverage": "jest -- --coverage",
     "test:watch": "jest --watch"
   },
   "dependencies": {
