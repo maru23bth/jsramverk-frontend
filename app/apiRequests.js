@@ -11,7 +11,7 @@ const URL = process.env.NEXT_PUBLIC_API_URL;
 async function fetchDocuments() {
     const response = await fetch(`${URL}/documents`);
     if (!response.ok) {
-        throw new Error(`Failed to fetch documents, status ${response.status}`);
+        throw new Error(`Failed to fetch documents`);
     }
     return response.json();
 };
@@ -37,7 +37,7 @@ async function createDocument(document) {
         body: JSON.stringify(document)
     });
     if (!response.ok) {
-        throw new Error(`Failed to create document, status ${response.status}`);
+        throw new Error(`Failed to create document`);
     }
 }
 
@@ -53,7 +53,7 @@ async function createDocument(document) {
 async function fetchDocument(id) {
     const response = await fetch(`${URL}/documents/${id}`);
     if (!response.ok) {
-        throw new Error(`Failed to fetch document, status ${response.status}`);
+        throw new Error(`Failed to fetch document`);
     }
     return response.json();
 };
@@ -79,7 +79,7 @@ async function updateDocument(id, document) {
         body: JSON.stringify(document)
     });
     if (!response.ok) {
-        throw new Error(`Failed to update document, status ${response.status}`);
+        throw new Error(`Failed to update document`);
     }
 }
 
@@ -93,7 +93,7 @@ async function updateDocument(id, document) {
 async function deleteDocument(id) {
     const response = await fetch(`${URL}/documents/${id}`, { method: 'DELETE' });
     if (!response.ok) {
-        throw new Error(`Failed to delete document, status ${response.status}`)
+        throw new Error(`Failed to delete document`)
     }
 }
 
