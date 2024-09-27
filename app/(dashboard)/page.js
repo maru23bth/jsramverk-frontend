@@ -1,27 +1,27 @@
 "use client";
 import 'dotenv/config';
-console.log(process.env)
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import useSWR from 'swr';
+import useSWR, {mutate} from 'swr';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link'
 import { Box, CircularProgress, Typography, List, ListItem, ListItemAvatar, Avatar, ListItemText, IconButton, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
-
-// Wrap the fetch API with react fetcher to get useSWR to work
-const fetcher = (...args) => fetch(...args).then(res => res.json());
+import { deleteDocument, fetchDocuments } from '@/app/apiRequests'
+import FeedbackAlert from '@/app/components/FeedbackAlert';
 
 export default function DocumentList() {
   // router to be able to redirect between pages
   const router = useRouter();
-  // const url = process.env.API_URL;
   const url = process.env.NEXT_PUBLIC_API_URL;
   // Fetch data from the API during the mount of the component
-  const { data, error, isLoading } = useSWR(`${url}/documents`, fetcher);
+  const { data, error, isLoading } = useSWR(`${url}/documents`, fetchDocuments);
   const [documents, setDocuments] = useState([]);
+  // to set the FeedbackAlert
+  const [feedback, setFeedback] = useState('');
+  const [feedbackType, setFeedbackType] = useState('');
 
   // Use the useEffect hook to update the documents state whenever the data from useSWR changes
   useEffect(() => {
@@ -38,18 +38,20 @@ export default function DocumentList() {
   );
 
   // onClick deleteIcon
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`${url}/documents/${id}`, { method: 'DELETE' });
-      if (response.ok) {
-        // update the documents value, which will trigger the useEffect hook, which will update documents state
-        setDocuments(documents.filter(doc => doc.id !== id));
-      } else {
-        console.log('Failed to delete document');
-      }
-    } catch (error) {
-      console.log("Error deleting document:", error);
-    }
+  const handleDelete = (id) => {
+    // delete
+    deleteDocument(id).then(() => {
+      setFeedback(`Document has been deleted successfully.`);
+      setFeedbackType('success');
+      // Remove the document from the UI
+      const updatedDocuments = documents.filter(doc => doc.id !== id);
+      setDocuments(updatedDocuments);
+      //refetch the data from the server
+      mutate(`${url}/documents`);
+    }).catch((error) => {
+      setFeedback(`${error}`);
+      setFeedbackType('error');
+    });
   };
 
   const handleEditClick = (id) => {
@@ -58,12 +60,10 @@ export default function DocumentList() {
 
   const styleSecondary = {
     overflow: 'hidden',
-    overflowY: 'scroll',
     textOverflow: 'ellipsis',
     lineClamp: '2',
-    maxWidth: '100%',
+    maxWidth: '90%',
     marginInlineEnd: '48px',
-    maxHeight: '50px',
     padding: '5px'
   }
 
@@ -72,6 +72,7 @@ export default function DocumentList() {
       <Typography sx={{ marginTop: 4, marginBottom: 2 }} variant="h6" component="div">
         Documents
       </Typography>
+      <FeedbackAlert feedback={feedback} feedbackType={feedbackType} />
       {documents.map(({ id, title, content }) => (
         <List key={id}>
           <ListItem
