@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -8,27 +8,44 @@ import EditIcon from '@mui/icons-material/Edit';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { createDocument, updateDocument } from '@/app/apiRequests';
-import FeedbackAlert from '@/app/components/components/FeedbackAlert';
+import FeedbackAlert from '@/app/components/FeedbackAlert';
 
 
 export default function CustomizedMenuBtn(props) {
-    const title = props.data.title;
-    const content = props.data.content
-    const id = props.id
+    const document = props.data.document;
+    const id = props.data.id
+    // feedback alert
     const [feedback, setFeedback] = useState('');
     const [feedbackType, setFeedbackType] = useState('');
     // components data
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
-    const handleSaveDocument = async () => {
-        await createDocument(title, content, setFeedback, setFeedbackType)
+    // call to api
+    const handleSaveDocument = () => {
+        createDocument(document).then(() => {
+                setFeedback(`Document titled "${document.title}" has been created successfully.`);
+                setFeedbackType('success');
+            }
+        ).catch((error) => {
+                setFeedback(`${error}`);
+                setFeedbackType('error');
+            }
+        );
     }
-    const handleUpdateDocument = async () => {
-        await updateDocument(id, title, content, setFeedback, setFeedbackType)
+
+    const handleUpdateDocument = () => {
+        updateDocument(id, document).then(() => {
+            setFeedback(`Document titled "${document.title}" has been updated successfully.`);
+            setFeedbackType('success');
+        }).catch((error) => {
+            setFeedback(`${error}`);
+            setFeedbackType('error');
+        });
     }
+
     const handleClose = (event) => {
         setAnchorEl(null);
         event.target.innerText.includes("Save")? handleSaveDocument() : handleUpdateDocument()

@@ -11,7 +11,6 @@
     Add <FeedbackAlert feedback={feedback} feedbackType={feedbackType} /> component to notify the user with the feedback.
  */
 
-import React from 'react';
 import Alert from '@mui/material/Alert';
 
 const FeedbackAlert = ({ feedback, feedbackType }) => {
