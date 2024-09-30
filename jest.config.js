@@ -25,6 +25,14 @@ const config = {
   // The directory where Jest should output its coverage files
   coverageDirectory: "coverage",
 
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1' // Maps '@/...' to './...'
+  },
+  // If using ES modules in Next.js, include this setting:
+  transform: {
+    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest', // Use babel-jest for JS/TS files
+  },
+
   // An array of regexp pattern strings used to skip coverage collection
   // coveragePathIgnorePatterns: [
   //   "\\\\node_modules\\\\"
