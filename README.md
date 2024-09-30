@@ -4,11 +4,9 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 1. Create .env file; add variable **NEXT_PUBLIC_API_URL=**
 2. Run development server
-
-```bash
-npm run dev
-```
-
+    ```bash
+    npm run dev
+    ```
 3. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 This project uses [material-ui](https://mui.com/material-ui/) and [toolpad](https://mui.com/toolpad/) to design compontents.
