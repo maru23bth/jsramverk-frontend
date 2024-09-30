@@ -48,7 +48,10 @@ export default function CustomizedMenuBtn(props) {
 
     const handleClose = (event) => {
         setAnchorEl(null);
-        event.target.innerText.includes("Save")? handleSaveDocument() : handleUpdateDocument()
+        if(event.target.innerText.includes("Save"))
+            handleSaveDocument()
+        else if(event.target.innerText.includes("Update"))
+            handleUpdateDocument()
     };
 
     return (
