@@ -1,6 +1,8 @@
 'use client';
 import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, Alert } from '@mui/material';
+import { TextField, Button, Box, Typography } from '@mui/material';
+import FeedbackAlert from '@/app/components/FeedbackAlert';
+import { createDocument } from '@/app/apiRequests';
 
 export default function CreateDocumentForm() {
     const [documentTitle, setDocumentTitle] = useState('');
@@ -17,44 +19,26 @@ export default function CreateDocumentForm() {
     };
 
     const handleButtonClick = async () => {
-    const url = 'https://jsramverk-maru23-dxfhbmhkbdd4e4ep.northeurope-01.azurewebsites.net';
-    const data = { title: documentTitle, content: documentContent };
 
-    try {
-        const response = await fetch(`${url}/documents`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-        });
+        const document = { title: documentTitle, content: documentContent };
 
-        if (response.ok) {
-            setFeedback(`Document titled "${data.title}" has been created successfully.`);
+        createDocument(document).then(() => {
+            setFeedback(`Document titled "${document.title}" has been created successfully.`);
             setFeedbackType('success');
             setDocumentTitle('');
             setDocumentContent('');
-        } else {
-            setFeedback('Failed to create document.');
+        }).catch((error)=> {
+            setFeedback(`${error}`);
             setFeedbackType('error');
-        }
-    } catch (error) {
-        setFeedback('Error creating document.');
-        setFeedbackType('error');
-        console.log("Error creating document:", error);
-    }
+        });
     };
 
     return (
     <Box sx={{ padding: 2 }}>
         <Typography variant="h6" gutterBottom>
         Document
-        </Typography>{/* feedback && () - Conditional Rendering: The alert is only rendered if feedback is truthy */}
-        {feedback && (
-            <Alert severity={feedbackType} sx={{ marginBottom: 2 }}>
-                {feedback}
-            </Alert>
-        )}
+        </Typography>
+        <FeedbackAlert feedback={feedback} feedbackType={feedbackType} />
         <Box sx={{ marginBottom: 2 }}>
         <TextField
             label="Title"
