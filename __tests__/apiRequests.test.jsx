@@ -50,7 +50,7 @@ describe('API Requests', ()=> {
             ok: false,
         });
         await expect(createDocument()).rejects.toThrow(Error);
-        expect(fetch).toHaveBeenCalledWith(`${URL}/documents`);
+        expect(fetch).toHaveBeenCalledWith(`${URL}/documents`, expect.objectContaining({method: 'POST'}));
     });
 
 });
