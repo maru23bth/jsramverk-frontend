@@ -28,7 +28,7 @@ jobs:
       run: npm run test
       
     - name: Build
-      run: npm run bild
+      run: npm run build
       
     - name: Deploy
       run: npm run deploy
