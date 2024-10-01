@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "bash -c 'source $HOME/.dbwebb.config; echo $DBW_USER@$DBW_HOST; rsync -av --delete -e \"ssh -i $DBW_SSH_KEY\" out/ $DBW_USER@$DBW_HOST:www/editor'"
+    "deploy": "bash -c 'source $HOME/.dbwebb.config; echo $DBW_USER@$DBW_HOST; rsync -av --delete -e \"ssh -i $DBW_SSH_KEY\" out/ $DBW_USER@$DBW_HOST:www/editor'",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -22,7 +24,12 @@
     "swr": "^2.2.5"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
     "eslint": "^8",
-    "eslint-config-next": "14.2.11"
+    "eslint-config-next": "14.2.11",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
   }
 }

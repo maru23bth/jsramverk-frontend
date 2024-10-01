@@ -4,15 +4,29 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { TextField, Box, Typography } from '@mui/material';
 import CustomizedMenuBtn from './optionsMenuBtn';
+import { fetchDocument } from '@/app/apiRequests';
 
 export default function EditDocument() {
     const searchParams = useSearchParams();
     const id = searchParams.get('id');
-    const url = 'https://jsramverk-maru23-dxfhbmhkbdd4e4ep.northeurope-01.azurewebsites.net';
-
     const [documentTitle, setDocumentTitle] = useState('');
     const [documentContent, setDocumentContent] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const document = { title: documentTitle, content: documentContent };
+
+
+    useEffect(() => {
+        let errorFetching = false;
+        if (id) {
+            fetchDocument(id).then(({title, content}) => { 
+                setDocumentTitle(title);
+                setDocumentContent(content); 
+            }).catch(() => {
+                errorFetching != errorFetching;
+                setErrorMessage(`Failed to fetch document`);
+            });
+        }
+        }, [id]);
 
     const handleTitleChange = (event) => {
         setDocumentTitle(event.target.value);
@@ -22,19 +36,8 @@ export default function EditDocument() {
         setDocumentContent(event.target.value);
     };
 
-    useEffect(() => {
-    if (id) {
-        // Fetch the document data using the id
-        fetch(`${url}/documents/${id}`)
-        .then(response => response.json())
-        .then(({title, content}) => { 
-            setDocumentTitle(title);
-            setDocumentContent(content); 
-        });
-    }
-    }, [id]);
-
     if (!document) return <div>Loading...</div>;
+    if (errorMessage) return <div>{errorMessage}</div>;
 
     return (
         <Box sx={{ padding: 2 }}>
@@ -61,7 +64,7 @@ export default function EditDocument() {
             fullWidth
         />
         </Box>
-        <CustomizedMenuBtn data={document} id={id} />
+        <CustomizedMenuBtn data={ { 'document': document, 'id': id } } />
     </Box>
     );
 }
