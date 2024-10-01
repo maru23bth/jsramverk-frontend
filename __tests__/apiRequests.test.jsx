@@ -1,6 +1,5 @@
 import { fetchDocument, fetchDocuments, createDocument, updateDocument, deleteDocument } from "@/app/apiRequests";
 
-const URL = process.env.NEXT_PUBLIC_API_URL
 // Mock fetch globally
 global.fetch = jest.fn();
 // Define mockDocument onc and reuse it
