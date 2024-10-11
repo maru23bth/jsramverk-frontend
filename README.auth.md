@@ -2,6 +2,11 @@
 
 Authfunction located in /lib/auth.js
 
+Uses JWT to get access token.
+Uses zustand to store user information (and access token) to be accessible across application.
+Saves JWT token in localstorage, so page reloads works.
+
+
 ## Routes
 - /auth/
     Show user information

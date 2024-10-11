@@ -14,10 +14,8 @@ export default function AuthInvitePage({ children }) {
 
     async function formSubmit(formData) {
         console.log('formSubmit', formData);
-        alert(window.location);
-        return;
         setStatus('loading...');
-        const response = await sendInvite(formData);
+        const response = await sendInvite(formData?.get('email'));
         setStatus(response);
     }
 
