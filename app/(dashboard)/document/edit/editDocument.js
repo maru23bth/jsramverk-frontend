@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
-import { TextField, Box, Typography } from '@mui/material';
+import { TextField, Box, Typography, CircularProgress } from '@mui/material';
 import CustomizedMenuBtn from './optionsMenuBtn';
 import { fetchDocument } from '@/app/apiRequests';
 // socket
@@ -14,6 +14,7 @@ export default function EditDocument() {
     const [documentTitle, setDocumentTitle] = useState('');
     const [documentContent, setDocumentContent] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [docSavingStatus, setDocSavingStatus] = useState('');
 
     const document = { 
         title: documentTitle,
@@ -36,6 +37,11 @@ export default function EditDocument() {
         socket.current.on('document-title-change', ({ title }) => {
             setDocumentTitle(title);
         });
+
+        socket.current.on('document-saved', () => {
+            setDocSavingStatus('');
+        });
+
         // triggered on unmount
         return () => {
             socket.current.disconnect();
@@ -61,6 +67,7 @@ export default function EditDocument() {
         const title = event.target.value;
         setDocumentTitle(title);
         socket.current.emit('document-title-change', {documentId, title});
+        setDocSavingStatus('Saving changes ...');
     };
 
     const handleContentChange = (event) => {
@@ -69,6 +76,7 @@ export default function EditDocument() {
         setDocumentContent(content);
         // send to server
         socket.current.emit('document-content-change', {documentId, content});
+        setDocSavingStatus('Saving changes ...');
     };
 
     if (!document) return <div>Loading...</div>;
@@ -79,6 +87,8 @@ export default function EditDocument() {
         <Typography variant="h6" gutterBottom>
         Document
         </Typography>
+        { docSavingStatus && <Box sx={{ marginBottom: 2 }}>{docSavingStatus}</Box> }
+        { docSavingStatus && <Box sx={{ margin: 4 }}><CircularProgress size="2rem" /></Box> }
         <Box sx={{ marginBottom: 2 }}>
         <TextField
             label="Title"
