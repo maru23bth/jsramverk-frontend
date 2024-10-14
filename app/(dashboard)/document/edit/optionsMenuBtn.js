@@ -13,7 +13,7 @@ import FeedbackAlert from '@/app/components/FeedbackAlert';
 
 export default function CustomizedMenuBtn(props) {
     const document = props.data.document;
-    const id = props.data.id
+    const documentId = props.data.documentId
     // feedback alert
     const [feedback, setFeedback] = useState('');
     const [feedbackType, setFeedbackType] = useState('');
@@ -37,7 +37,7 @@ export default function CustomizedMenuBtn(props) {
     }
 
     const handleUpdateDocument = () => {
-        updateDocument(id, document).then(() => {
+        updateDocument(documentId, document).then(() => {
             setFeedback(`Document titled "${document.title}" has been updated successfully.`);
             setFeedbackType('success');
         }).catch((error) => {
