@@ -18,9 +18,12 @@ export default function CredentialsSignInPage() {
     const user = useUserStore((state) => state.user);
 
     return (
+        <div>
+        <h1 style={{position: 'absolute',margin: 0,left: '50%',rotate: '-35deg',fontSize: '4em',color: 'red'}}>Signup</h1>
         <SignInPage
             signIn={signUp} providers={providers} 
             slots={{signUpLink: signInLink, submitButton}}
         />
+        </div >
     );
 }
