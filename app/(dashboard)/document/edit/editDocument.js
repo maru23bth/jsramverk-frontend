@@ -25,7 +25,9 @@ export default function EditDocument() {
 
     // useEffect handling socket
     useEffect(() => {
-        socket.current = io('http://localhost:1337');
+
+        const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337';
+        socket.current = io(url);
 
         // send document id to the server-socket
         socket.current.emit('my-create-room', documentId);
