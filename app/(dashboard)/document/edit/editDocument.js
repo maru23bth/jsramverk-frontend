@@ -7,6 +7,11 @@ import CustomizedMenuBtn from './optionsMenuBtn';
 import { fetchDocument } from '@/app/apiRequests';
 // socket
 import { io } from "socket.io-client";
+import { useUserStore } from '@/lib/auth';
+
+// Get token directly from Zustand or localStorage if needed
+const getToken = () => useUserStore.getState().token || localStorage.getItem('authToken');
+
 
 export default function EditDocument() {
     const searchParams = useSearchParams();
@@ -26,8 +31,26 @@ export default function EditDocument() {
     // useEffect handling socket
     useEffect(() => {
 
-        const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337';
-        socket.current = io(url);
+        // const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337';
+        const url = 'http://localhost:1337';
+        const token = getToken();
+
+        if (!token) {
+            alert("Token not found, authentication required");
+            return;
+        }
+
+        socket.current = io(url,
+            {
+                auth: {
+                    token: token
+                }
+            }
+        );
+
+        socket.current.on('connect_error', (err) => {
+            alert(`Socket connection error: ${err.message}`);
+        });
 
         // send document id to the server-socket
         socket.current.emit('my-create-room', documentId);
