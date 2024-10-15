@@ -5,13 +5,13 @@ name: CI
 
 on:
   push:
-    branches: [ "main", "implement-tests" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
-  build:
+  run-test:
     runs-on: ubuntu-latest
 
     steps:
