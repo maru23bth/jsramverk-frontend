@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { TextField, Box, Typography, CircularProgress } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import CustomizedMenuBtn from './optionsMenuBtn';
 import { fetchDocument } from '@/app/apiRequests';
 // socket
@@ -10,10 +11,11 @@ import { io } from "socket.io-client";
 import { useUserStore } from '@/lib/auth';
 
 // Get token directly from Zustand or localStorage if needed
-const getToken = () => useUserStore.getState().token || localStorage.getItem('authToken');
-
+const getToken = () => useUserStore.getState().token;
 
 export default function EditDocument() {
+    // router to be able to redirect between pages
+    const router = useRouter();
     const searchParams = useSearchParams();
     const documentId = searchParams.get('id');
     const [documentTitle, setDocumentTitle] = useState('');
@@ -26,18 +28,21 @@ export default function EditDocument() {
         content: documentContent
     };
 
+    // Define client socket
     const socket = useRef(null);
+
 
     // useEffect handling socket
     useEffect(() => {
 
-        // const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337';
-        const url = 'http://localhost:1337';
+        const url = process.env.NEXT_PUBLIC_API_URL;
+
+        // set token
         const token = getToken();
 
         if (!token) {
-            alert("Token not found, authentication required");
-            return;
+            // Redirect to auth if no token is found
+            router.push('/auth');
         }
 
         socket.current = io(url,
@@ -48,6 +53,8 @@ export default function EditDocument() {
             }
         );
 
+        // Triggered if middleware throws an error
+        // next(new Error(''));
         socket.current.on('connect_error', (err) => {
             alert(`Socket connection error: ${err.message}`);
         });
@@ -69,7 +76,9 @@ export default function EditDocument() {
 
         // triggered on unmount
         return () => {
-            socket.current.disconnect();
+            if (socket.current) {
+                socket.current.disconnect();
+            }
         }
         
     }, [documentId]);
