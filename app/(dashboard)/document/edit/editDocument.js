@@ -81,7 +81,7 @@ export default function EditDocument() {
             }
         }
         
-    }, [documentId]);
+    }, [documentId, router]);
 
 
     useEffect(() => {
