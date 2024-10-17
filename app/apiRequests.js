@@ -1,3 +1,5 @@
+import { useUserStore } from '../lib/auth.js';
+
 /* Module with functions that make POST, PUT, GET requests to the API */
 const URL = process.env.NEXT_PUBLIC_API_URL;
 /**
@@ -9,7 +11,11 @@ const URL = process.env.NEXT_PUBLIC_API_URL;
 * Each document is represented as an object.
 */
 async function fetchDocuments() {
-    const response = await fetch(`${URL}/documents`);
+    const response = await fetch(`${URL}/documents`, {
+        headers: {
+            'x-access-token': useUserStore.getState().token,
+        }
+    });
     if (!response.ok) {
         throw new Error(`Failed to fetch documents`);
     }
@@ -33,6 +39,7 @@ async function createDocument(document) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'x-access-token': useUserStore.getState().token,
         },
         body: JSON.stringify(document)
     });
@@ -51,7 +58,11 @@ async function createDocument(document) {
 *@returns {Promise<Object>} Resolves to a document object when the request is successful.
 */
 async function fetchDocument(id) {
-    const response = await fetch(`${URL}/documents/${id}`);
+    const response = await fetch(`${URL}/documents/${id}`, {
+        headers: {
+            'x-access-token': useUserStore.getState().token,
+        }
+    });
     if (!response.ok) {
         throw new Error(`Failed to fetch document`);
     }
@@ -75,6 +86,7 @@ async function updateDocument(id, document) {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
+            'x-access-token': useUserStore.getState().token,
         },
         body: JSON.stringify(document)
     });
@@ -91,7 +103,12 @@ async function updateDocument(id, document) {
  * @returns {Promise<void>} Resolves when the document is successfully deleted, rejects if there is an error.
  */
 async function deleteDocument(id) {
-    const response = await fetch(`${URL}/documents/${id}`, { method: 'DELETE' });
+    const response = await fetch(`${URL}/documents/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'x-access-token': useUserStore.getState().token,
+        }
+    });
     if (!response.ok) {
         throw new Error(`Failed to delete document`)
     }
