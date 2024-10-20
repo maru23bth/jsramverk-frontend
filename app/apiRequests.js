@@ -114,4 +114,76 @@ async function deleteDocument(id) {
     }
 }
 
-export { fetchDocuments, fetchDocument, createDocument, updateDocument, deleteDocument }
+/**
+* Sends a POST request to add a collaborator to the document with the given id.
+*
+ * @throws {Error} Throws an error if add collaborator fails.
+ * 
+ * @returns {<void>}.
+ */
+async function addCollaborator(id, email) {
+    const response = await fetch(`${URL}/documents/${id}/collaborator`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': useUserStore.getState().token,
+        },
+        body: JSON.stringify({
+            email: email
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to add collaborator`);
+    }
+
+    const data = await response.json();
+
+    return data;
+}
+
+/**
+* Sends a POST request to add a collaborator to the document with the given id.
+*
+ * @throws {Error} Throws an error if add collaborator fails.
+ * 
+ * @returns {<void>}.
+ */
+async function removeCollaborator(id, userId) {
+    const response = await fetch(`${URL}/documents/${id}/collaborator`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': useUserStore.getState().token,
+        },
+        body: JSON.stringify({
+            userId: userId
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to remove collaborator`);
+    }
+    // Returned current Document object
+    return await response.json();
+}
+
+// fetch user ID by email
+async function fetchCollaboratorIdByEmail(email) {
+    const token = useUserStore.getState().token;
+    const response = await fetch(`${URL}/documents/collaborator`, {
+        headers: {
+            'x-email': email,
+            'x-access-token': token,
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error('User not found');
+    }
+    const collaboratorId = await response.json();
+
+    return collaboratorId;
+}
+
+export { fetchDocuments, fetchDocument, createDocument, updateDocument, deleteDocument, addCollaborator, fetchCollaboratorIdByEmail, removeCollaborator }

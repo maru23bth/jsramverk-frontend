@@ -4,26 +4,27 @@ import { TextField, Box, Button, Typography, IconButton, Tooltip } from '@mui/ma
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { useState } from 'react';
-import { addCollaborator, removeCollaborator } from '@/app/apiRequests';
+import { addCollaborator, removeCollaborator, fetchCollaboratorIdByEmail } from '@/app/apiRequests';
 import FeedbackAlert from '../../FeedbackAlert';
-import { useUserStore } from '@/lib/auth';
 
 export default function Collaborator({ documentId }) {
-    const [collaborator, setCollaborator] = useState('');
+    const [collaboratorEmail, setCollaboratorEmail] = useState('');
     /* Feedback Alert */
     const [feedback, setFeedback] = useState('');
     const [feedbackType, setFeedbackType] = useState('');
 
+
     const handleValueChange = (event) => {
         const value = event.target.value;
-        setCollaborator(value);
+        setCollaboratorEmail(value);
     };
 
     const handleAddCollaborator = async () => {
         try {
-            if (collaborator) {
-                await addCollaborator(documentId, collaborator);
-                setFeedback(`User '${collaborator}' can now edit this document`);
+            if (collaboratorEmail) {
+                await addCollaborator(documentId, collaboratorEmail);
+
+                setFeedback(`User '${collaboratorEmail}' can now edit this document`);
                 setFeedbackType('success');
             } else {
                 setFeedback('To add a collaborator, enter their registered email');
@@ -36,17 +37,27 @@ export default function Collaborator({ documentId }) {
         }
     };
 
-    // i need current user
-    // userId to delete as collab
+    // userId to delete as collaboratorEmail
     const handleRemoveCollaborator = async () => {
         try {
-            if (collaborator) {
-                await addCollaborator(documentId, collaborator);
-                setFeedback(`User '${collaborator}' can now edit this document`);
-                setFeedbackType('success');
+            if (collaboratorEmail) {
+                // Fetch collaborator ID
+                const { collaboratorId } = await fetchCollaboratorIdByEmail(collaboratorEmail);
+                if (collaboratorId) {
+                    const document = await removeCollaborator(documentId, collaboratorId);
+                    if (document) {
+                        setFeedback(`User '${collaboratorEmail}' can not longer edit this document`);
+                        setFeedbackType('success');
+                    }
+
+                } else {
+                    setFeedback(`User could not be deleted`);
+                    setFeedbackType('error');
+                }
+            } else {
+                setFeedback('To remove a collaborator, enter their registered email');
+                setFeedbackType('error');
             }
-            setFeedback('To remove a collaborator, enter their registered email');
-            setFeedbackType('error');
         } catch (error) {
             setFeedback(error.message);
             setFeedbackType('error');
@@ -64,7 +75,7 @@ export default function Collaborator({ documentId }) {
                     label="Registered user email"
                     variant="outlined"
                     placeholder="email@example.com"
-                    value={collaborator}
+                    value={collaboratorEmail}
                     onChange={handleValueChange}
                 />
             </Box>

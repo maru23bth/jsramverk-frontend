@@ -55,7 +55,7 @@ export default function DocumentList() {
     };
 
     const handleEditClick = (id) => {
-    router.push(`/document/edit/?id=${id}`);
+        router.push(`/document/edit/?id=${id}`);
     };
 
     const styleSecondary = {
