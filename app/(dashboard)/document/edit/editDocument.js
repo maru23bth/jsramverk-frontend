@@ -9,6 +9,7 @@ import { fetchDocument } from '@/app/apiRequests';
 // socket
 import { io } from "socket.io-client";
 import { useUserStore } from '@/lib/auth';
+import Collaborator from '@/app/components/document/collaborator/collaborator';
 
 // Get token directly from Zustand or localStorage if needed
 const getToken = () => useUserStore.getState().token;
@@ -118,32 +119,36 @@ export default function EditDocument() {
 
     return (
         <Box sx={{ padding: 2 }}>
-        <Typography variant="h6" gutterBottom>
-        Document
-        </Typography>
-        { docSavingStatus && <Box sx={{ marginBottom: 2 }}>{docSavingStatus}</Box> }
-        { docSavingStatus && <Box sx={{ margin: 4 }}><CircularProgress size="2rem" /></Box> }
-        <Box sx={{ marginBottom: 2 }}>
-        <TextField
-            label="Title"
-            variant="outlined"
-            value={documentTitle}
-            onChange={handleTitleChange}
-            fullWidth
-        />
+            {/* Collaborator handling */}
+            <Collaborator documentId={ documentId } socket={socket.current} />
+            {/* Document Editor */}
+            <Typography variant="h6" gutterBottom>
+            Document
+            </Typography>
+            { docSavingStatus && <Box sx={{ marginBottom: 2 }}>{docSavingStatus}</Box> }
+            { docSavingStatus && <Box sx={{ margin: 4 }}><CircularProgress size="2rem" /></Box> }
+            <Box sx={{ marginBottom: 2 }}>
+            <TextField
+                label="Title"
+                variant="outlined"
+                value={documentTitle}
+                onChange={handleTitleChange}
+                fullWidth
+            />
+            </Box>
+            <Box sx={{ marginBottom: 2 }}>
+            <TextField
+                label="Content"
+                variant="outlined"
+                multiline
+                rows={4}
+                value={documentContent}
+                onChange={handleContentChange}
+                fullWidth
+            />
+            </Box>
+            {/* Button save or update */}
+            <CustomizedMenuBtn data={ { 'document': document, 'documentId': documentId } } />
         </Box>
-        <Box sx={{ marginBottom: 2 }}>
-        <TextField
-            label="Content"
-            variant="outlined"
-            multiline
-            rows={4}
-            value={documentContent}
-            onChange={handleContentChange}
-            fullWidth
-        />
-        </Box>
-        <CustomizedMenuBtn data={ { 'document': document, 'documentId': documentId } } />
-    </Box>
     );
 }
