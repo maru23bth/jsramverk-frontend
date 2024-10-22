@@ -4,7 +4,6 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { TextField, Box, Typography, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useRouter } from 'next/navigation';
 import CustomizedMenuBtn from './optionsMenuBtn';
 import { fetchDocument } from '@/app/apiRequests';
 // socket
