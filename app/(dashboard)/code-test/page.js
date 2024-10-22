@@ -30,7 +30,7 @@ export default function CodeTest() {
             <TextField fullWidth label="Update Title external" value={title} onChange={e => {console.log(e.target.value);setTitle(e.target.value)}} />
             
             <hr />
-            Nedanför är komponenten för editorn, ovanför test för att uppdatera
+            Below is the component for the editor, above the test for updating.
             <hr />
 
             <CodeMode

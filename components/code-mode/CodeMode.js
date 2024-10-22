@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useEffect, use } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import Editor from '@monaco-editor/react';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -29,7 +29,7 @@ import './CodeMode.css';
  * @example
  * <CodeMode code="console.log('Hello World')" onSave={code => alert(`The code is:\n${code}`)} />
  */
-export default function CodeMode({ code, onSave, onChange, title = 'Title', onTitleChange, comments, deleteComment, addComment, changeComment }) {
+export default function CodeMode({ code, onSave, onChange, title = 'Title', onTitleChange, comments, deleteComment, addComment }) {
     const [loadingCode, setLoadingCode] = useState(false);
     const [loadingSave, setLoadingSave] = useState(false);
     const [internalTitle, setInternalTitle] = useState(title);
@@ -39,13 +39,44 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
     const commentsRef = useRef(null);
 
 
+    /**
+     * Render comments in the editor.
+     */
+    const renderComments = useCallback(() => {
+        if (!editorRef.current) return;
+
+        const editor = editorRef.current;
+        const monaco = monacoRef.current;
+        const decorations = decorationsRef.current;
+
+        decorations.clear();
+
+        const newComments = comments.map(comment => {
+            const line = parseInt(comment.location);
+            const range = new monaco.Range(line, 1, line, 1);
+            return {
+                range: range,
+                options: {
+                    isWholeLine: true,
+                    glyphMarginClassName: 'comment-glyph',
+                    glyphMarginHoverMessage: {
+                        value: `${comment.content}\n\n-- ${comment.author.email}`
+                    },
+                }
+            };
+        });
+
+        decorations.set(newComments);
+    }, [comments, editorRef, monacoRef, decorationsRef]);
+
+
     // Update comments when they change
     useEffect(() => {
         console.log('Comments changed', comments);
         renderComments();
         console.log('Comments after render', comments);
         commentsRef.current = comments;
-    }, [comments]);
+    }, [comments, renderComments]);
 
     // Update external title when internal title change
     useEffect(() => {
@@ -115,35 +146,6 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
         }
     }
 
-    /**
-     * Render comments in the editor.
-     */
-    const renderComments = () => {
-        if (!editorRef.current) return;
-
-        const editor = editorRef.current;
-        const monaco = monacoRef.current;
-        const decorations = decorationsRef.current;
-
-        decorations.clear();
-
-        const newComments = comments.map(comment => {
-            const line = parseInt(comment.location);
-            const range = new monaco.Range(line, 1, line, 1);
-            return {
-                range: range,
-                options: {
-                    isWholeLine: true,
-                    glyphMarginClassName: 'comment-glyph',
-                    glyphMarginHoverMessage: {
-                        value: `${comment.content}\n\n-- ${comment.author.email}`
-                    },
-                }
-            };
-        });
-
-        decorations.set(newComments);
-    }
 
     /**
      * Triggered when the editor is mounted.
@@ -197,10 +199,12 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
                 const input = prompt(`Add comment to line ${line}`);
                 if (!input) return;
 
-                alert(`Add comment to line ${line}: ${input}`);
-                if (addComment) {
-                    addComment(input, line);
+                if (!addComment) {
+                    alert(`Add comment not implemented to line ${line}: ${input}`);
+                    return;
                 }
+
+                addComment(input, line);
             },
         });
 
