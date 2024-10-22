@@ -10,6 +10,11 @@ import { fetchDocument } from '@/app/apiRequests';
 import { io } from "socket.io-client";
 import { useUserStore } from '@/lib/auth';
 import Collaborator from '@/app/components/document/collaborator/collaborator';
+import FormLabel from '@mui/material/FormLabel';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import CodeMode from '@/components/code-mode/CodeMode';
 
 // Get token directly from Zustand or localStorage if needed
 const getToken = () => useUserStore.getState().token;
@@ -23,6 +28,7 @@ export default function EditDocument() {
     const [documentContent, setDocumentContent] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [docSavingStatus, setDocSavingStatus] = useState('');
+    const [isCodeMode, setCodeMode] = useState(false);
 
     const document = { 
         title: documentTitle,
@@ -32,6 +38,8 @@ export default function EditDocument() {
     // Define client socket
     const socket = useRef(null);
 
+    // code-mode
+    // const isCodeMode = useRef(false);
 
     // useEffect handling socket
     useEffect(() => {
@@ -98,6 +106,11 @@ export default function EditDocument() {
         }
         }, [documentId]);
 
+    /* Toggle code-mode */
+    const toggleCodeMode = () => {
+        setCodeMode(!isCodeMode);
+    }
+
     const handleTitleChange = (event) => {
         const title = event.target.value;
         setDocumentTitle(title);
@@ -122,6 +135,15 @@ export default function EditDocument() {
             {/* Collaborator handling */}
             <Collaborator documentId={ documentId } socket={socket.current} />
             {/* Document Editor */}
+            <FormControl component="fieldset" variant="standard">
+                <FormLabel component="legend">Switch to code-mode</FormLabel>
+                <FormControlLabel
+                    control={
+                    <Switch checked={isCodeMode} onChange={toggleCodeMode} />
+                    }
+                    label="Code Mode"
+                />
+            </FormControl>
             <Typography variant="h6" gutterBottom>
             Document
             </Typography>
@@ -137,7 +159,7 @@ export default function EditDocument() {
             />
             </Box>
             <Box sx={{ marginBottom: 2 }}>
-            <TextField
+            { isCodeMode ? <CodeMode /> :       <TextField
                 label="Content"
                 variant="outlined"
                 multiline
@@ -145,7 +167,8 @@ export default function EditDocument() {
                 value={documentContent}
                 onChange={handleContentChange}
                 fullWidth
-            />
+            /> }
+
             </Box>
             {/* Button save or update */}
             <CustomizedMenuBtn data={ { 'document': document, 'documentId': documentId } } />
