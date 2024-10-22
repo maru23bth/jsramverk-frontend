@@ -141,7 +141,7 @@ export default function EditDocument() {
                 label="Content"
                 variant="outlined"
                 multiline
-                rows={4}
+                rows={20}
                 value={documentContent}
                 onChange={handleContentChange}
                 fullWidth

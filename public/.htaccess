@@ -9,11 +9,13 @@ RewriteRule (.*) - [NC,L]
 # For request via www.student.bth.se return the file.html if it exists
 RewriteCond %{HTTP_HOST} ^www\.student\.bth\.se$ [NC]
 RewriteCond %{REQUEST_FILENAME}.html -f
-RewriteRule (.*) /~maru23/editor/$1.html [NC,L]
+#RewriteRule (.*) /~maru23/editor/$1.html [NC,L]
+RewriteRule (.*) /~olbr22/editor/$1.html [NC,L]
 
 # Rewrite 1 - For request via www.student.bth.se
 RewriteCond %{HTTP_HOST} ^www\.student\.bth\.se$ [NC]
-RewriteRule (.*) /~maru23/editor/index.html [NC,L]
+#RewriteRule (.*) /~maru23/editor/index.html [NC,L]
+RewriteRule (.*) /~olbr22/editor/index.html [NC,L]
 
 # Rewrite 2 - For other requests
 RewriteCond %{HTTP_HOST} !^www\.student\.bth\.se$ [NC]
