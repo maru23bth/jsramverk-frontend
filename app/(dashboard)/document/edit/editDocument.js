@@ -150,25 +150,29 @@ export default function EditDocument() {
             { docSavingStatus && <Box sx={{ marginBottom: 2 }}>{docSavingStatus}</Box> }
             { docSavingStatus && <Box sx={{ margin: 4 }}><CircularProgress size="2rem" /></Box> }
             <Box sx={{ marginBottom: 2 }}>
-            <TextField
-                label="Title"
-                variant="outlined"
-                value={documentTitle}
-                onChange={handleTitleChange}
-                fullWidth
-            />
-            </Box>
-            <Box sx={{ marginBottom: 2 }}>
-            { isCodeMode ? <CodeMode /> :       <TextField
-                label="Content"
-                variant="outlined"
-                multiline
-                rows={20}
-                value={documentContent}
-                onChange={handleContentChange}
-                fullWidth
-            /> }
-
+                {/* Render code-mode or title/content editor */}
+                { isCodeMode ? <CodeMode title={documentTitle} /> :     
+                    <>
+                    <Box sx={{ marginBottom: 2 }}>
+                        <TextField
+                            label="Title"
+                            variant="outlined"
+                            value={documentTitle}
+                            onChange={handleTitleChange}
+                            fullWidth
+                        />
+                    </Box>
+                    <TextField
+                        label="Content"
+                        variant="outlined"
+                        multiline
+                        rows={20}
+                        value={documentContent}
+                        onChange={handleContentChange}
+                        fullWidth
+                    />
+                    </>
+                }
             </Box>
             {/* Button save or update */}
             <CustomizedMenuBtn data={ { 'document': document, 'documentId': documentId } } />
