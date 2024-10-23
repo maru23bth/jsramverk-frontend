@@ -1,0 +1,8 @@
+.comment-glyph {
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path fill="yellow" d="M21 6h-2v9H7v2c0 .55.45 1 1 1h9l4 4V7c0-.55-.45-1-1-1zm-4 7H3c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v9c0 .55-.45 1-1 1z"/><path fill="yellow" d="M21 6h-2v9H7v2c0 .55.45 1 1 1h9l4 4V7c0-.55-.45-1-1-1zm-4 7H3c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v9c0 .55-.45 1-1 1z"/></svg>');
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;    
+    
+}
