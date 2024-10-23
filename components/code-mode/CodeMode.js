@@ -18,7 +18,7 @@ import './CodeMode.css';
  * 
  * @param {Object} props - The props object of the component.
  * @param {string} props.code - The code to display in the editor.
- * @param {Function} props.onSave - The function to call when the save button is clicked.
+ * @param {Function} props.onSave - The function to call when the save button is clicked. (code, title, comments) => void
  * @param {Function} props.onChange - The function to call when the code changes. (value, event) => void
  * @param {string} [props.title='Title'] - The title of the code editor.
  * @param {Function} [props.onTitleChange] - The function to call when the title changes. (title, event) => void
@@ -95,7 +95,7 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
 
         try {
             setLoadingSave(true);
-            await onSave(editorRef.current.getValue(), title);
+            await onSave(editorRef.current.getValue(), title, comments);
         } catch (error) {
             console.error(error);
         } finally {
