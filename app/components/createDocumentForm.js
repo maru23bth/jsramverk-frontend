@@ -18,9 +18,12 @@ export default function CreateDocumentForm() {
     setDocumentContent(event.target.value);
     };
 
-    const handleButtonClick = async () => {
+    const handleButtonClick = () => {
 
-        const document = { title: documentTitle, content: documentContent };
+        const document = { 
+            title: documentTitle, 
+            content: documentContent 
+        };
 
         createDocument(document).then(() => {
             setFeedback(`Document titled "${document.title}" has been created successfully.`);

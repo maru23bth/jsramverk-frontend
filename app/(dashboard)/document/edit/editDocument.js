@@ -42,18 +42,24 @@ export default function EditDocument() {
 
     // Define client socket
     const socket = useRef(null);
-    // Comments
-    // const comments = useRef([]);
+
     // Handle comments
     useEffect(() => {
         /* fetch document object from db */
         fetchDocument(documentId)
-        .then(result => setDocumentComments(result.comments))
+        .then(result => { setDocumentComments(result.comments) })
         .catch((error) => alert(error));
-            // alert(`Current doc: ${JSON.stringify(result)}`);
+
+        function getDoc() {
+            fetchDocument(documentId)
+            .then(result => { alert(`type ${Object.keys(result)}${Object.values(result)}`) })
+            .catch((error) => alert(error));
+        }
+        getDoc();
+
     }, [documentId, commentChange])
 
-    // useEffect handling socket
+    // Handle socket
     useEffect(() => {
         const url = process.env.NEXT_PUBLIC_API_URL;
 
@@ -94,6 +100,24 @@ export default function EditDocument() {
             setDocSavingStatus('');
         });
 
+        /* CodeMode */
+        // Listen for `change-to-code-mode` events from the server
+        socket.current.on('change-to-code-mode', ({ documentId: receivedDocId, codeMode }) => {
+            // Ensure the event is for the current document
+            if (receivedDocId === documentId) {
+                setCodeMode(codeMode);  // Update local state to reflect the new mode
+            }
+        });
+
+        // Listen for `add-comment-code-mode` events from the server
+        socket.current.on('add-comment-code-mode', ({ documentId: receivedDocId, location }) => {
+            // Ensure the event is for the current document
+            if (receivedDocId === documentId) {
+                setCommentChange(commentChange => !commentChange);  // Update local state to reflect change in comments
+                alert(`New comment at line ${location}`);
+            }
+        });
+
 
         // triggered on unmount
         return () => {
@@ -120,18 +144,25 @@ export default function EditDocument() {
 
     /* Toggle code-mode */
     const toggleCodeMode = () => {
-        setCodeMode(!codeMode);
-    }
+        // Toggle the codeMode state and get the new state value
+        setCodeMode(prevCodeMode => {
+            const newCodeMode = !prevCodeMode;
+    
+            // Emit the new codeMode value via the socket
+            socket.current.emit('change-to-code-mode', { documentId, codeMode: newCodeMode });
+    
+            return newCodeMode;
+        });
+    };
+    
 
-    const handleTitleChange = (event) => {
-        const title = event.target.value;
+    const handleTitleChange = (title) => {
         setDocumentTitle(title);
         socket.current.emit('document-title-change', { documentId, title });
         setDocSavingStatus('Saving changes ...');
     };
 
-    const handleContentChange = (event) => {
-        const content = event.target.value;
+    const handleContentChange = (content) => {
         // update locally
         setDocumentContent(content);
         // send to server
@@ -143,6 +174,8 @@ export default function EditDocument() {
     const handleAddComment = async (content, location) => {
         await addComment(documentId, content, location);
         setCommentChange(commentChange => !commentChange);
+        // send to server
+        socket.current.emit('add-comment-code-mode', { documentId, location });
     }
     /* Delete comment via CodeMode */
     const handleDeleteComment = async (comment) => {
@@ -163,14 +196,13 @@ export default function EditDocument() {
         setDocSavingStatus('');
     }
 
-
     if (!document) return <div>Loading...</div>;
     if (errorMessage) return <div>{errorMessage}</div>;
 
     return (
         <Box sx={{ padding: 2 }}>
             {/* Collaborator handling */}
-            <Collaborator documentId={documentId} socket={socket.current} />
+            <Collaborator documentId={documentId} />
             {/* Toggle button */}
             <FormControl component="fieldset" variant="standard">
                 <FormLabel component="legend">Switch to code-mode</FormLabel>
@@ -196,6 +228,8 @@ export default function EditDocument() {
                         onSave={handleOnSave}
                         addComment={handleAddComment}
                         deleteComment={handleDeleteComment}
+                        onChange={handleContentChange}
+                        onTitleChange={handleTitleChange}
                     /> :
                     <>
                         <Box sx={{ marginBottom: 2 }}>
@@ -203,7 +237,7 @@ export default function EditDocument() {
                                 label="Title"
                                 variant="outlined"
                                 value={documentTitle}
-                                onChange={handleTitleChange}
+                                onChange={(event) => { handleTitleChange(event.target.value)}}
                                 fullWidth
                             />
                         </Box>
@@ -213,7 +247,7 @@ export default function EditDocument() {
                             multiline
                             rows={10}
                             value={documentContent}
-                            onChange={handleContentChange}
+                            onChange={(event) => {handleContentChange(event.target.value)}}
                             fullWidth
                         />
                     </>
