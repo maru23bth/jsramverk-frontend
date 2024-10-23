@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import { TextField, Box, Typography, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import CustomizedMenuBtn from './optionsMenuBtn';
-import { fetchDocument } from '@/app/apiRequests';
+import { fetchDocument, updateDocument, addNewComment } from '@/app/apiRequests';
 // socket
 import { io } from "socket.io-client";
 import { useUserStore } from '@/lib/auth';
@@ -28,22 +28,23 @@ export default function EditDocument() {
     const [documentContent, setDocumentContent] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [docSavingStatus, setDocSavingStatus] = useState('');
-    const [isCodeMode, setCodeMode] = useState(false);
+    const [codeMode, setCodeMode] = useState(false);
 
-    const document = { 
+    const document = {
         title: documentTitle,
         content: documentContent
     };
 
+
+
+
     // Define client socket
     const socket = useRef(null);
-
-    // code-mode
-    // const isCodeMode = useRef(false);
+    // Comments
+    const comments = useRef([]);
 
     // useEffect handling socket
     useEffect(() => {
-
         const url = process.env.NEXT_PUBLIC_API_URL;
 
         // set token
@@ -53,6 +54,15 @@ export default function EditDocument() {
             // Redirect to auth if no token is found
             router.push('/auth');
         }
+
+        /* fetch document object from db */
+        const currentDocument = (async () => {
+            return await fetchDocument(documentId);
+            // alert(document.title)
+            // alert(JSON.stringify(document));
+        })();
+        // Document comments
+        comments.current = currentDocument.comments;
 
         socket.current = io(url,
             {
@@ -83,38 +93,39 @@ export default function EditDocument() {
             setDocSavingStatus('');
         });
 
+
         // triggered on unmount
         return () => {
             if (socket.current) {
                 socket.current.disconnect();
             }
         }
-        
+
     }, [documentId, router]);
 
 
     useEffect(() => {
         let errorFetching = false;
         if (documentId) {
-            fetchDocument(documentId).then(({title, content}) => { 
+            fetchDocument(documentId).then(({ title, content }) => {
                 setDocumentTitle(title);
-                setDocumentContent(content); 
+                setDocumentContent(content);
             }).catch(() => {
                 errorFetching != errorFetching;
                 setErrorMessage(`Failed to fetch document`);
             });
         }
-        }, [documentId]);
+    }, [documentId]);
 
     /* Toggle code-mode */
     const toggleCodeMode = () => {
-        setCodeMode(!isCodeMode);
+        setCodeMode(!codeMode);
     }
 
     const handleTitleChange = (event) => {
         const title = event.target.value;
         setDocumentTitle(title);
-        socket.current.emit('document-title-change', {documentId, title});
+        socket.current.emit('document-title-change', { documentId, title });
         setDocSavingStatus('Saving changes ...');
     };
 
@@ -123,7 +134,7 @@ export default function EditDocument() {
         // update locally
         setDocumentContent(content);
         // send to server
-        socket.current.emit('document-content-change', {documentId, content});
+        socket.current.emit('document-content-change', { documentId, content });
         setDocSavingStatus('Saving changes ...');
     };
 
@@ -133,49 +144,52 @@ export default function EditDocument() {
     return (
         <Box sx={{ padding: 2 }}>
             {/* Collaborator handling */}
-            <Collaborator documentId={ documentId } socket={socket.current} />
-            {/* Document Editor */}
+            <Collaborator documentId={documentId} socket={socket.current} />
+            {/* Toggle button */}
             <FormControl component="fieldset" variant="standard">
                 <FormLabel component="legend">Switch to code-mode</FormLabel>
                 <FormControlLabel
                     control={
-                    <Switch checked={isCodeMode} onChange={toggleCodeMode} />
+                        <Switch checked={codeMode} onChange={toggleCodeMode} />
                     }
                     label="Code Mode"
                 />
             </FormControl>
             <Typography variant="h6" gutterBottom>
-            Document
+                Document
             </Typography>
-            { docSavingStatus && <Box sx={{ marginBottom: 2 }}>{docSavingStatus}</Box> }
-            { docSavingStatus && <Box sx={{ margin: 4 }}><CircularProgress size="2rem" /></Box> }
+            {docSavingStatus && <Box sx={{ marginBottom: 2 }}>{docSavingStatus}</Box>}
+            {docSavingStatus && <Box sx={{ margin: 4 }}><CircularProgress size="2rem" /></Box>}
             <Box sx={{ marginBottom: 2 }}>
                 {/* Render code-mode or title/content editor */}
-                { isCodeMode ? <CodeMode title={documentTitle} /> :     
+                { codeMode ? <CodeMode title={documentTitle} code={documentContent} comments={comments.current} onSave={ async (content, title, comments) => {
+                    setDocSavingStatus('Saving changes ...');
+                    await updateDocument(documentId, { type: 'code', content, title })
+                }} addComment={(content, location) => addNewComment(documentId, content, location )} /> :
                     <>
-                    <Box sx={{ marginBottom: 2 }}>
+                        <Box sx={{ marginBottom: 2 }}>
+                            <TextField
+                                label="Title"
+                                variant="outlined"
+                                value={documentTitle}
+                                onChange={handleTitleChange}
+                                fullWidth
+                            />
+                        </Box>
                         <TextField
-                            label="Title"
+                            label="Content"
                             variant="outlined"
-                            value={documentTitle}
-                            onChange={handleTitleChange}
+                            multiline
+                            rows={10}
+                            value={documentContent}
+                            onChange={handleContentChange}
                             fullWidth
                         />
-                    </Box>
-                    <TextField
-                        label="Content"
-                        variant="outlined"
-                        multiline
-                        rows={20}
-                        value={documentContent}
-                        onChange={handleContentChange}
-                        fullWidth
-                    />
                     </>
                 }
             </Box>
             {/* Button save or update */}
-            <CustomizedMenuBtn data={ { 'document': document, 'documentId': documentId } } />
+            <CustomizedMenuBtn data={{ 'document': document, 'documentId': documentId }} />
         </Box>
     );
 }

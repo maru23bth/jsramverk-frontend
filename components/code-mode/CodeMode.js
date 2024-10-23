@@ -51,7 +51,7 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
 
         decorations.clear();
 
-        const newComments = comments.map(comment => {
+        const newComments = comments?.map(comment => {
             const line = parseInt(comment.location);
             const range = new monaco.Range(line, 1, line, 1);
             return {
@@ -72,9 +72,9 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
 
     // Update comments when they change
     useEffect(() => {
-        console.log('Comments changed', comments);
+        alert('Comments changed', comments);
         renderComments();
-        console.log('Comments after render', comments);
+        alert('Comments after render', comments);
         commentsRef.current = comments;
     }, [comments, renderComments]);
 
@@ -160,7 +160,7 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
         decorationsRef.current = editor.createDecorationsCollection();
         console.log('Monaco editor mounted', decorationsRef.current);
 
-         editor.onContextMenu(e => {
+        editor.onContextMenu(e => {
             if (!e.target.element.classList.contains('comment-glyph')) return;
 
             const line = e.target.position.lineNumber || undefined;
@@ -204,7 +204,8 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
                     return;
                 }
 
-                addComment(input, line);
+                const r = await addComment(input, line);
+                alert(`Comment: ${r}`)
             },
         });
 
