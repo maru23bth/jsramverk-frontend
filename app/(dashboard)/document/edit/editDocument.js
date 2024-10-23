@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import { TextField, Box, Typography, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import CustomizedMenuBtn from './optionsMenuBtn';
-import { fetchDocument, updateDocument, addNewComment } from '@/app/apiRequests';
+import { fetchDocument, updateDocument, addComment, deleteComment } from '@/app/apiRequests';
 // socket
 import { io } from "socket.io-client";
 import { useUserStore } from '@/lib/auth';
@@ -29,19 +29,29 @@ export default function EditDocument() {
     const [errorMessage, setErrorMessage] = useState('');
     const [docSavingStatus, setDocSavingStatus] = useState('');
     const [codeMode, setCodeMode] = useState(false);
+    const [documentComments, setDocumentComments] = useState([]);
+    const [commentChange, setCommentChange] = useState(false);
 
     const document = {
         title: documentTitle,
         content: documentContent
     };
 
-
+    // updateDocument('67178dd44f57ed783d0308e3',  { "comments": [] });
 
 
     // Define client socket
     const socket = useRef(null);
     // Comments
-    const comments = useRef([]);
+    // const comments = useRef([]);
+    // Handle comments
+    useEffect(() => {
+        /* fetch document object from db */
+        fetchDocument(documentId)
+        .then(result => setDocumentComments(result.comments))
+        .catch((error) => alert(error));
+            // alert(`Current doc: ${JSON.stringify(result)}`);
+    }, [documentId, commentChange])
 
     // useEffect handling socket
     useEffect(() => {
@@ -54,15 +64,6 @@ export default function EditDocument() {
             // Redirect to auth if no token is found
             router.push('/auth');
         }
-
-        /* fetch document object from db */
-        const currentDocument = (async () => {
-            return await fetchDocument(documentId);
-            // alert(document.title)
-            // alert(JSON.stringify(document));
-        })();
-        // Document comments
-        comments.current = currentDocument.comments;
 
         socket.current = io(url,
             {
@@ -138,6 +139,31 @@ export default function EditDocument() {
         setDocSavingStatus('Saving changes ...');
     };
 
+    /* Add comment via CodeMode */
+    const handleAddComment = async (content, location) => {
+        await addComment(documentId, content, location);
+        setCommentChange(commentChange => !commentChange);
+    }
+    /* Delete comment via CodeMode */
+    const handleDeleteComment = async (comment) => {
+        await deleteComment(documentId, comment);
+        setCommentChange(commentChange => !commentChange); 
+    }
+    /* Save document via CodeMode */
+    const handleOnSave = async (content, title, documentComments) => {
+        setDocSavingStatus('Saving changes ...');
+        const document = { 
+            type: 'code', 
+            content, 
+            title, 
+            comments: documentComments
+        }
+        await updateDocument(documentId, document);
+        setCommentChange(commentChange => !commentChange);
+        setDocSavingStatus('');
+    }
+
+
     if (!document) return <div>Loading...</div>;
     if (errorMessage) return <div>{errorMessage}</div>;
 
@@ -162,10 +188,15 @@ export default function EditDocument() {
             {docSavingStatus && <Box sx={{ margin: 4 }}><CircularProgress size="2rem" /></Box>}
             <Box sx={{ marginBottom: 2 }}>
                 {/* Render code-mode or title/content editor */}
-                { codeMode ? <CodeMode title={documentTitle} code={documentContent} comments={comments.current} onSave={ async (content, title, comments) => {
-                    setDocSavingStatus('Saving changes ...');
-                    await updateDocument(documentId, { type: 'code', content, title })
-                }} addComment={(content, location) => addNewComment(documentId, content, location )} /> :
+                { codeMode ?
+                    <CodeMode 
+                        title={documentTitle}
+                        code={documentContent}
+                        comments={documentComments}
+                        onSave={handleOnSave}
+                        addComment={handleAddComment}
+                        deleteComment={handleDeleteComment}
+                    /> :
                     <>
                         <Box sx={{ marginBottom: 2 }}>
                             <TextField

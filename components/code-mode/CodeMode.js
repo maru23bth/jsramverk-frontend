@@ -72,9 +72,9 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
 
     // Update comments when they change
     useEffect(() => {
-        alert('Comments changed', comments);
+        console.log(`Comments changed ${comments}`);
         renderComments();
-        alert('Comments after render', comments);
+        console.log(`Comments after render ${comments}`);
         commentsRef.current = comments;
     }, [comments, renderComments]);
 
@@ -172,7 +172,7 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
             commentsRef.current.forEach(comment => {
                 if (comment.location == line) {
                     if (deleteComment) {
-                        deleteComment(comment);
+                        deleteComment(comment.id);
                     }
                 }
             });
@@ -203,9 +203,7 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
                     alert(`Add comment not implemented to line ${line}: ${input}`);
                     return;
                 }
-
-                const r = await addComment(input, line);
-                alert(`Comment: ${r}`)
+                addComment(input, line);
             },
         });
 

@@ -188,7 +188,7 @@ async function fetchCollaboratorIdByEmail(email) {
 
 
 // Add comment
-async function addNewComment(id, content, location) {
+async function addComment(id, content, location) {
     const token = useUserStore.getState().token;
     const response = await fetch(`${URL}/documents/${id}/comment`, {
         method: 'POST',
@@ -211,4 +211,17 @@ async function addNewComment(id, content, location) {
     return JSON.stringify(data);
 }
 
-export { fetchDocuments, fetchDocument, createDocument, updateDocument, deleteDocument, addCollaborator, fetchCollaboratorIdByEmail, removeCollaborator, addNewComment }
+// Delete comment
+async function deleteComment(id, commentId) {
+    const response = await fetch(`${URL}/documents/${id}/comment/${commentId}`, {
+        method: 'DELETE',
+        headers: {
+            'x-access-token': useUserStore.getState().token,
+        }
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to delete comment`)
+    }
+}
+
+export { fetchDocuments, fetchDocument, createDocument, updateDocument, deleteDocument, addCollaborator, fetchCollaboratorIdByEmail, removeCollaborator, addComment, deleteComment }
