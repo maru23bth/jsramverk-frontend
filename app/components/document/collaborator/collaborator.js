@@ -20,7 +20,7 @@ export default function Collaborator({ documentId }) {
         fetchDocument(documentId)
         .then(result => { setCollaborators(result.collaborators) })
         .catch((error) => alert(error));
-    }, []);
+    }, [documentId]);
 
     const handleValueChange = (event) => {
         const value = event.target.value;
