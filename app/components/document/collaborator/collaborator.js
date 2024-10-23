@@ -1,9 +1,10 @@
 'use client';
 
-import { TextField, Box, Button, Typography, IconButton, Tooltip } from '@mui/material';
+import { TextField, Box, Typography, IconButton, Tooltip } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { fetchDocument } from '@/app/apiRequests';
 import { addCollaborator, removeCollaborator, fetchCollaboratorIdByEmail } from '@/app/apiRequests';
 import FeedbackAlert from '../../FeedbackAlert';
 
@@ -12,7 +13,14 @@ export default function Collaborator({ documentId }) {
     /* Feedback Alert */
     const [feedback, setFeedback] = useState('');
     const [feedbackType, setFeedbackType] = useState('');
+    const [collaborators, setCollaborators] = useState([]);
 
+    useEffect(() => {
+        // get collaborators
+        fetchDocument(documentId)
+        .then(result => { setCollaborators(result.collaborators) })
+        .catch((error) => alert(error));
+    }, []);
 
     const handleValueChange = (event) => {
         const value = event.target.value;
@@ -23,6 +31,11 @@ export default function Collaborator({ documentId }) {
         try {
             if (collaboratorEmail) {
                 await addCollaborator(documentId, collaboratorEmail);
+
+                // get collaborators
+                fetchDocument(documentId)
+                .then(result => { setCollaborators(result.collaborators) })
+                .catch((error) => alert(error));
 
                 setFeedback(`User '${collaboratorEmail}' can now edit this document`);
                 setFeedbackType('success');
@@ -46,6 +59,9 @@ export default function Collaborator({ documentId }) {
                 if (collaboratorId) {
                     const document = await removeCollaborator(documentId, collaboratorId);
                     if (document) {
+                        setCollaborators(prevCollaborators => {
+                            return prevCollaborators.filter((c) => c.id !== collaboratorId);
+                        });
                         setFeedback(`User '${collaboratorEmail}' can not longer edit this document`);
                         setFeedbackType('success');
                     }
@@ -78,6 +94,12 @@ export default function Collaborator({ documentId }) {
                     value={collaboratorEmail}
                     onChange={handleValueChange}
                 />
+                {/* Show list of collaborators */}
+                <ul>
+                    {
+                        collaborators?.map((person) => (<li key={person.email}>{person.email}</li>))
+                    }
+                </ul>
             </Box>
             <Box sx={{ marginBottom: 1 }}>
                 <Box>

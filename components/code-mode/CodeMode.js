@@ -135,7 +135,18 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
     }
 
     /**
-     * Triggered when the title input changes.
+     * Triggered when the content of <Editor /> changes. 
+     */
+    function contentChange() {
+        const content = editorRef.current.getValue();
+
+        if (onChange) {
+            onChange(content);
+        }
+    }
+
+    /**
+     * 
      * @param {Event} event 
      */
     function titleChange(event) {
@@ -241,7 +252,7 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
                 value={code}
                 theme='vs-dark'
                 onMount={editorMounted}
-                onChange={onChange}
+                onChange={contentChange}
             />
         </>
     )
