@@ -37,9 +37,6 @@ export default function EditDocument() {
         content: documentContent
     };
 
-    // updateDocument('67178dd44f57ed783d0308e3',  { "comments": [] });
-
-
     // Define client socket
     const socket = useRef(null);
 
@@ -47,16 +44,8 @@ export default function EditDocument() {
     useEffect(() => {
         /* fetch document object from db */
         fetchDocument(documentId)
-        .then(result => { setDocumentComments(result.comments) })
+        .then(result => { setDocumentComments(result?.comments) })
         .catch((error) => alert(error));
-
-        function getDoc() {
-            fetchDocument(documentId)
-            .then(result => { alert(`type ${Object.keys(result)}${Object.values(result)}`) })
-            .catch((error) => alert(error));
-        }
-        getDoc();
-
     }, [documentId, commentChange])
 
     // Handle socket
@@ -115,6 +104,14 @@ export default function EditDocument() {
             if (receivedDocId === documentId) {
                 setCommentChange(commentChange => !commentChange);  // Update local state to reflect change in comments
                 alert(`New comment at line ${location}`);
+            }
+        });
+         // Listen for `remove-comment-code-mode` events from the server
+        socket.current.on('remove-comment-code-mode', ({ documentId: receivedDocId }) => {
+            // Ensure the event is for the current document
+            if (receivedDocId === documentId) {
+                setCommentChange(commentChange => !commentChange);  // Update local state to reflect change in comments
+                alert(`Comment has been removed`);
             }
         });
 
@@ -181,6 +178,9 @@ export default function EditDocument() {
     const handleDeleteComment = async (comment) => {
         await deleteComment(documentId, comment);
         setCommentChange(commentChange => !commentChange); 
+        // send to server
+        socket.current.emit('remove-comment-code-mode', { documentId });
+        
     }
     /* Save document via CodeMode */
     const handleOnSave = async (content, title, documentComments) => {
@@ -202,7 +202,7 @@ export default function EditDocument() {
     return (
         <Box sx={{ padding: 2 }}>
             {/* Collaborator handling */}
-            <Collaborator documentId={documentId} />
+            <Collaborator documentId={ documentId } />
             {/* Toggle button */}
             <FormControl component="fieldset" variant="standard">
                 <FormLabel component="legend">Switch to code-mode</FormLabel>

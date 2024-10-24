@@ -10,33 +10,32 @@ import FeedbackAlert from '../../FeedbackAlert';
 
 export default function Collaborator({ documentId }) {
     const [collaboratorEmail, setCollaboratorEmail] = useState('');
+    const [collaborators, setCollaborators] = useState([]);
     /* Feedback Alert */
     const [feedback, setFeedback] = useState('');
     const [feedbackType, setFeedbackType] = useState('');
-    const [collaborators, setCollaborators] = useState([]);
 
     useEffect(() => {
         // get collaborators
         fetchDocument(documentId)
-        .then(result => { setCollaborators(result.collaborators) })
+        .then(result => { setCollaborators(result?.collaborators) })
         .catch((error) => alert(error));
     }, [documentId]);
 
+    /* Set collaborator email */
     const handleValueChange = (event) => {
         const value = event.target.value;
         setCollaboratorEmail(value);
     };
-
+    /* Add collaborator/user */
     const handleAddCollaborator = async () => {
         try {
             if (collaboratorEmail) {
                 await addCollaborator(documentId, collaboratorEmail);
-
                 // get collaborators
                 fetchDocument(documentId)
                 .then(result => { setCollaborators(result.collaborators) })
                 .catch((error) => alert(error));
-
                 setFeedback(`User '${collaboratorEmail}' can now edit this document`);
                 setFeedbackType('success');
             } else {
@@ -50,7 +49,7 @@ export default function Collaborator({ documentId }) {
         }
     };
 
-    // userId to delete as collaboratorEmail
+    /* Remove collaborator/user */
     const handleRemoveCollaborator = async () => {
         try {
             if (collaboratorEmail) {
@@ -65,7 +64,6 @@ export default function Collaborator({ documentId }) {
                         setFeedback(`User '${collaboratorEmail}' can not longer edit this document`);
                         setFeedbackType('success');
                     }
-
                 } else {
                     setFeedback(`User could not be deleted`);
                     setFeedbackType('error');
