@@ -212,8 +212,8 @@ async function addComment(id, content, location) {
 }
 
 // Delete comment
-async function deleteComment(id, commentId) {
-    const response = await fetch(`${URL}/documents/${id}/comment/${commentId}`, {
+async function deleteComment(id, comment) {
+    const response = await fetch(`${URL}/documents/${id}/comment/${comment.id}`, {
         method: 'DELETE',
         headers: {
             'x-access-token': useUserStore.getState().token,
