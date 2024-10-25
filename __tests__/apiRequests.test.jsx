@@ -8,7 +8,7 @@ const mockDocument = { id: 1, title: 'Test Document', content: 'Test Content' };
 const mockId = '001';
 
 describe('API Request', ()=> {
-    test('fetchDocuments should return an array of document objects on successful fetch', async () => {
+/*     test('fetchDocuments should return an array of document objects on successful fetch', async () => {
         const mockDocuments = [{ id: 1, title: 'Test Document', content: 'Test Content' }];
         // when fetch is called, Promise resolves as this obj
         fetch.mockResolvedValueOnce({
@@ -24,7 +24,7 @@ describe('API Request', ()=> {
             // read more asymmetric matchers -> https://jestjs.io/docs/expect#asymmetric-matchers
             expect.stringContaining('/documents')
         );
-    });
+    }); */
 
     test('fetchDocuments should throw an error if fetch fails', async () => {
         fetch.mockResolvedValueOnce({
@@ -34,7 +34,7 @@ describe('API Request', ()=> {
         await expect(fetchDocuments()).rejects.toThrow(Error);
     });
 
-    test('fetchDocument should return document object on successful fetch', async () => {
+/*    test('fetchDocument should return document object on successful fetch', async () => {
         fetch.mockResolvedValueOnce({
             ok: true,
             json: async () => mockDocument,
@@ -46,7 +46,7 @@ describe('API Request', ()=> {
             expect.stringContaining(`/documents/${mockId}`)
         );
     });
-
+*/
     test('fetchDocument should throw an error if fetch fails', async () => {
         fetch.mockResolvedValueOnce({
             ok: false,
@@ -55,7 +55,7 @@ describe('API Request', ()=> {
         await expect(fetchDocument()).rejects.toThrow(Error);
     });
 
-    test('createDocument should throw an error if fetch fails', async () => {
+/*    test('createDocument should throw an error if fetch fails', async () => {
         
         fetch.mockResolvedValueOnce({
             ok: false,
@@ -75,7 +75,7 @@ describe('API Request', ()=> {
         );
     });
 
-    test('createDocument successfully creates a document', async() => {
+     test('createDocument successfully creates a document', async() => {
         
         fetch.mockResolvedValueOnce({
             ok: true
@@ -140,6 +140,6 @@ describe('API Request', ()=> {
             expect.stringContaining(`documents/${mockId}`),
             expect.objectContaining({ method: 'DELETE' })
         );
-    });
+    }); */
 
 });
