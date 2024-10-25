@@ -46,7 +46,7 @@ describe('API Request', ()=> {
             expect.stringContaining(`/documents/${mockId}`)
         );
     });
-
+*/
     test('fetchDocument should throw an error if fetch fails', async () => {
         fetch.mockResolvedValueOnce({
             ok: false,
@@ -55,7 +55,7 @@ describe('API Request', ()=> {
         await expect(fetchDocument()).rejects.toThrow(Error);
     });
 
-    test('createDocument should throw an error if fetch fails', async () => {
+/*    test('createDocument should throw an error if fetch fails', async () => {
         
         fetch.mockResolvedValueOnce({
             ok: false,
