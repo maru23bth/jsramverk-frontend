@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import { TextField, Box, Typography, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import CustomizedMenuBtn from './optionsMenuBtn';
+import { fetchGraphQL } from '@/lib/graphql'
 import { fetchDocument, updateDocument, addComment, deleteComment } from '@/app/apiRequests';
 // socket
 import { io } from "socket.io-client";
@@ -15,6 +16,7 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import CodeMode from '@/components/code-mode/CodeMode';
+
 
 // Get token directly from Zustand or localStorage if needed
 const getToken = () => useUserStore.getState().token;
@@ -42,10 +44,31 @@ export default function EditDocument() {
 
     // Handle comments
     useEffect(() => {
-        /* fetch document object from db */
-        fetchDocument(documentId)
-        .then(result => { setDocumentComments(result?.comments) })
-        .catch((error) => alert(error));
+        /* Fetch using GraphQL */
+        const getDocumentCommentsQuery = `
+            query getDocumentComments($id: String!) {
+                getDocumentById(id: $id) {
+                    comments {
+                        id        
+                        author {
+                            username
+                            email
+                        }     
+                        content   
+                        location
+                    }
+                }
+            }
+        `;
+        fetchGraphQL(getDocumentCommentsQuery, { id: documentId })
+            .then(result => {
+                console.log('GraphQL Data:', result.data);
+                const comments = result.data.getDocumentById.comments
+                { setDocumentComments(comments) }
+            })
+            .catch(
+                (error) => console.error(error)
+            );
     }, [documentId, commentChange])
 
     // Handle socket
