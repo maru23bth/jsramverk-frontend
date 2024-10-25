@@ -72,9 +72,9 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
 
     // Update comments when they change
     useEffect(() => {
-        console.log(`Comments changed ${comments}`);
+        console.log('Comments changed', comments);
         renderComments();
-        console.log(`Comments after render ${comments}`);
+        console.log('Comments after render', comments);
         commentsRef.current = comments;
     }, [comments, renderComments]);
 
@@ -144,9 +144,10 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
             onChange(content);
         }
     }
-
+  
     /**
      * 
+     * Triggered when the title input changes.
      * @param {Event} event 
      */
     function titleChange(event) {
@@ -171,6 +172,7 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
         decorationsRef.current = editor.createDecorationsCollection();
         console.log('Monaco editor mounted', decorationsRef.current);
 
+
         editor.onContextMenu(e => {
             if (!e.target.element.classList.contains('comment-glyph')) return;
 
@@ -183,7 +185,7 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
             commentsRef.current.forEach(comment => {
                 if (comment.location == line) {
                     if (deleteComment) {
-                        deleteComment(comment.id);
+                        deleteComment(comment);
                     }
                 }
             });
@@ -214,6 +216,7 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
                     alert(`Add comment not implemented to line ${line}: ${input}`);
                     return;
                 }
+
                 addComment(input, line);
             },
         });
