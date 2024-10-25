@@ -144,9 +144,10 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
             onChange(content);
         }
     }
-
+  
     /**
      * 
+     * Triggered when the title input changes.
      * @param {Event} event 
      */
     function titleChange(event) {
@@ -170,6 +171,7 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
 
         decorationsRef.current = editor.createDecorationsCollection();
         console.log('Monaco editor mounted', decorationsRef.current);
+
 
         editor.onContextMenu(e => {
             if (!e.target.element.classList.contains('comment-glyph')) return;
