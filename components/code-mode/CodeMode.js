@@ -51,7 +51,7 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
 
         decorations.clear();
 
-        const newComments = comments.map(comment => {
+        const newComments = comments?.map(comment => {
             const line = parseInt(comment.location);
             const range = new monaco.Range(line, 1, line, 1);
             return {
@@ -135,6 +135,18 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
     }
 
     /**
+     * Triggered when the content of <Editor /> changes. 
+     */
+    function contentChange() {
+        const content = editorRef.current.getValue();
+
+        if (onChange) {
+            onChange(content);
+        }
+    }
+  
+    /**
+     * 
      * Triggered when the title input changes.
      * @param {Event} event 
      */
@@ -160,7 +172,8 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
         decorationsRef.current = editor.createDecorationsCollection();
         console.log('Monaco editor mounted', decorationsRef.current);
 
-         editor.onContextMenu(e => {
+
+        editor.onContextMenu(e => {
             if (!e.target.element.classList.contains('comment-glyph')) return;
 
             const line = e.target.position.lineNumber || undefined;
@@ -242,7 +255,7 @@ export default function CodeMode({ code, onSave, onChange, title = 'Title', onTi
                 value={code}
                 theme='vs-dark'
                 onMount={editorMounted}
-                onChange={onChange}
+                onChange={contentChange}
             />
         </>
     )
